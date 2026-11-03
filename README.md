@@ -134,6 +134,14 @@ java -cp 'conf/:lib/*:apps/*' org.fisco.bcos.sdk.demo.perf.PerformanceDCV apply 
 
 If the build reports a Google Java Format error, run `./gradlew googleJavaFormat` first.
 
+## Deployment and Compatibility
+
+Compared with standard ACME, BACME introduces additional infrastructure. However, these components are not independently deployed by every domain owner. The blockchain nodes and ACME smart contract are maintained by participating CAs, while the oracle and IPFS cluster operate as shared consortium services. The VRF is provided by the oracle framework rather than deployed as a separate service. A domain owner therefore requires only the BACME client and access to a blockchain node, whereas the consortium participants bear the costs of consensus, oracle operation, and distributed storage.
+
+The experimental evaluation quantifies the principal operational overhead through smart-contract execution, throughput, on-chain storage, protocol latency, and communication volume. In the permissioned deployment, gas consumption represents smart-contract execution complexity rather than a direct monetary fee. The 16-node experiment maintains more than 550 transactions per second for domain-control validation under the evaluated workload, while off-chain certificate storage reduces the growth of on-chain data. These benefits involve measurable trade-offs, including approximately 7 ms of additional certificate-verification latency and lower throughput for some revocation operations. Because the prototype components were co-located on one server, these results characterize protocol overhead rather than the monetary or administrative cost of a geographically distributed production deployment.
+
+BACME preserves the X.509 certificate structure and HTTP-based domain-control validation, allowing existing Web-server and TLS mechanisms to be reused. Nevertheless, it is not a drop-in replacement for standard ACME: the client must submit blockchain transactions and publish certificates to off-chain storage, while the browser requires a BACME verification module to query the smart contract and certificate storage. BACME is therefore intended primarily for consortium or managed-network environments that require shared certificate-state governance, multi-domain lifecycle management, and resilient revocation. Where reliance on a single CA is acceptable and minimal deployment complexity is the primary objective, standard ACME remains the simpler option.
+
 ## Implementation Details of the Baselines
 
 This document describes how the two baselines used in the performance evaluation of BACME (Section VI-B of the paper) were reproduced. Neither baseline provides a publicly available implementation, so both were reimplemented following the architectures and protocols described in their respective papers:
