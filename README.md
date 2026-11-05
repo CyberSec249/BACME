@@ -6,20 +6,6 @@ This repository contains the prototype implementation of **BACME**, together wit
 
 BACME is a consortium blockchain-based ACME scheme. It manages domain control validation, certificate application, renewal, revocation, and verification through smart contracts, stores complete certificates in decentralized off-chain storage (IPFS), and supports both single-domain and multi-domain certificates.
 
-## Repository Structure
-
-| Directory | Description |
-|---|---|
-| `contract/` | Solidity smart contracts: `DpkiAcme.sol` (BACME), `DACME.sol` (Baseline 1), `DCV.sol` (Baseline 2), and the Truora oracle and VRF client contracts they depend on |
-| `acmeClient/` | ACME client of BACME (Go): back-end API server, client logic, and certificate verification |
-| `webui/` | Front-end graphical user interface of the ACME client (Vue 3 + Ant Design Vue) |
-| `deployContract/` | Program for deploying the BACME smart contract |
-| `baseline1/` | Reproduced Baseline 1 [Kfoury et al., TSP 2020] (Go client) |
-| `baseline2/` | Reproduced Baseline 2, B-DCV [Khoury et al., TSP 2022] (Go client) |
-| `performanceTest/` | Load generator for throughput evaluation, based on the FISCO-BCOS Java SDK |
-
-The implementation details of the two baselines are described in [Implementation Details of the Baselines](#implementation-details-of-the-baselines).
-
 ## Environment
 
 The prototype was evaluated with the following software:
