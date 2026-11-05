@@ -36,7 +36,7 @@ Credentials are **not** included in this repository. Before running any componen
 | `config.toml` | Node address, group ID, chain ID, and account key file |
 | `contractAddress` | Address of the deployed smart contract (written after deployment) |
 
-In addition, the following addresses are hard-coded and must be adapted to your deployment:
+In addition, the following addresses are hard-coded and must be adapted to your deployment (due to confidentiality requirements, the acmeClient and webui directories are not publicly available at this time):
 
 | Location | Setting |
 |---|---|
