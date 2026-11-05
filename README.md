@@ -215,8 +215,3 @@ Baseline 1 does not provide a revocation mechanism, so revocation is not evaluat
 **Certificate verification.** The verification procedure retrieves the public key bound to the common name of the presented certificate from the blockchain, and checks that it matches the public key of the certificate and that the certificate signature is valid (see `Baseline1VerifyCertificate` and `Baseline2VerifyCertificate`).
 
 **Throughput.** The throughput of all three schemes was measured using the same load generator based on the FISCO-BCOS Java SDK under identical request rates, as described in [Throughput Evaluation](#6-throughput-evaluation).
-
-## Notes
-
-- Some comments and log messages in the source code are written in Chinese.
-- This is a research prototype and is not intended for production use.
