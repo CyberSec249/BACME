@@ -1,22 +1,34 @@
 # BACME: Blockchain-based Automatic Certificate Management Environment
 
-This repository contains the prototype implementation of **BACME**, together with the reproduced baselines and the performance evaluation tools used in the paper:
+This repository contains part of the prototype implementation of **BACME**, together with the reproduced baselines, the performance evaluation toolkit, and the experimental data used in the paper:
 
 > L. Li, Z. Yan, C. Shi, and X. Liang, "BACME: Blockchain-based Automatic Certificate Management Environment."
 
 BACME is a consortium blockchain-based ACME scheme. It manages domain control validation, certificate application, renewal, revocation, and verification through smart contracts, stores complete certificates in decentralized off-chain storage (IPFS), and supports both single-domain and multi-domain certificates.
 
+> **Note on this release:** For confidentiality reasons, this repository does not contain the complete prototype. The following components are **not included**:
+>
+> - the BACME ACME client back end (`acmeClient/`);
+> - the load generator (`performanceTest/`) and the compiled benchmark jar (`java-sdk-demo-1.0.0.jar`);
+> - the Go contract bindings (`deployContract/DpkiAcme/`, `baseline1/DACME/`, `baseline2/DCV/`) and the `go.mod` / `go.sum` files;
+> - the Truora and FISCO-BCOS contracts imported by the smart contracts (`VRFClient.sol`, `FiscoOracleClient.sol`, `Table.sol`);
+> - the project files and static assets of the web UI (`package.json`, Vite configuration, `dist/assets/`);
+> - all credentials and configuration files (`conf/`).
+>
+> The released code is therefore provided mainly for reference and review. Paths to the missing components that appear in scripts or in the sections below refer to the complete prototype.
+
 ## Repository Structure
 
-| Directory | Description |
+| Path | Description |
 |---|---|
-| `contract/` | Solidity smart contracts: `DpkiAcme.sol` (BACME), `DACME.sol` (Baseline 1), `DCV.sol` (Baseline 2), and the Truora oracle and VRF client contracts they depend on |
-| `acmeClient/` | ACME client of BACME (Go): back-end API server, client logic, and certificate verification |
-| `webui/` | Front-end graphical user interface of the ACME client (Vue 3 + Ant Design Vue) |
-| `deployContract/` | Program for deploying the BACME smart contract |
-| `baseline1/` | Reproduced Baseline 1 [Kfoury et al., TSP 2020] (Go client) |
-| `baseline2/` | Reproduced Baseline 2, B-DCV [Khoury et al., TSP 2022] (Go client) |
-| `performanceTest/` | Load generator for throughput evaluation, based on the FISCO-BCOS Java SDK |
+| `contract/` | Solidity smart contracts: `DpkiAcme.sol` (BACME), `DACME.sol` (Baseline 1), `DCV.sol` (Baseline 2), the string utility library `LibString.sol`, and the VRF sample client `simplevrf/RandomNumberSampleVRF.sol` |
+| `deployContract/` | Program for deploying the BACME smart contract (`main.go`) |
+| `baseline1/` | Reproduced Baseline 1 [Kfoury et al., TSP 2020] (Go client: `cmd/`, `util/`) |
+| `baseline2/` | Reproduced Baseline 2, B-DCV [Khoury et al., TSP 2022] (Go client: `cmd/`, `util/`) |
+| `webui/` | Source code of the front-end graphical user interface of the ACME client (Vue 3 + Ant Design Vue): entry `src/main.js` and page components in `src/components/` |
+| `bacme-exp/` | Performance evaluation toolkit: network delay emulation, node count adjustment, benchmark automation, result aggregation, report generation, plotting scripts, and patches to the FISCO-BCOS Java SDK benchmark program (`perf-patch/`) |
+| `bacme-exp-results/` | Experimental data: network latency × number of consensus nodes (`v2/`) and the large certificate state experiment (`scale/`) |
+| `bacme-start.sh`, `bacme-stop.sh` | Scripts that start and stop the complete BACME stack (FISCO BCOS → MySQL → Truora → IPFS → back end → front end) |
 
 The implementation details of the two baselines are described in [Implementation Details of the Baselines](#implementation-details-of-the-baselines).
 
@@ -30,33 +42,37 @@ The prototype was evaluated with the following software:
 | Solidity compiler (solc) | 0.6.10 |
 | Truora oracle | 1.1.1 |
 | IPFS | Private IPFS cluster (4 nodes in our evaluation) |
-| Go | 1.22 or later (as required by the `go.mod` files) |
+| Go | 1.22 or later |
 | FISCO-BCOS Go SDK | v1.1.1 |
-| Echo framework | 4.13.3 |
-| Java / Gradle | Java 8 / Gradle 6.3 (Gradle wrapper included) |
+| Java | Java 8 |
 | FISCO-BCOS Java SDK | 2.9.0 |
 | Node.js | Required for the web UI (Vite 6) |
+| Python 3 + matplotlib | Result aggregation and plotting (`bacme-exp/`) |
+| Linux `tc` (netem) | Network delay emulation (`bacme-exp/netem.sh`) |
 
-In our evaluation, all components were deployed on a single server with 32 CPU cores, 128 GB of RAM, and 1 TB of storage.
+In the original evaluation of the paper, all components were deployed on a single server with 32 CPU cores, 128 GB of RAM, and 1 TB of storage. The hardware, operating system, and consensus parameters of the experiments in `bacme-exp-results/` are recorded in `bacme-exp-results/v2/env.txt`.
 
 ## Configuration
 
-Credentials are **not** included in this repository. Before running any component, provide the following files in the corresponding `conf/` directory (`acmeClient/conf`, `deployContract/conf`, `baseline1/conf`, `baseline2/conf`, and `performanceTest/java-sdk-demo/dist/conf`):
+Credentials are **not** included in this repository. Before running a Go component, provide the following files in its `conf/` directory (`deployContract/conf`, `baseline1/conf`, `baseline2/conf`); the benchmark program reads the same files from `dist/conf/`:
 
 | File | Description |
 |---|---|
 | `ca.crt`, `sdk.crt`, `sdk.key` | SDK certificates of your FISCO-BCOS chain (generated when the chain is built) |
-| `accounts/<address>.pem` | Private key of the blockchain account (can be generated with `conf/get_account.sh`) |
+| `accounts/<address>.pem` | Private key of the blockchain account |
 | `config.toml` | Node address, group ID, chain ID, and account key file |
 | `contractAddress` | Address of the deployed smart contract (written after deployment) |
 
-In addition, the following addresses are hard-coded and must be adapted to your deployment:
+In addition, the following settings are hard-coded and must be adapted to your deployment:
 
 | Location | Setting |
 |---|---|
-| `acmeClient/util/CertificateManagement.go` | IPFS API endpoint (`http://192.168.136.128:9001`) |
-| `acmeClient/util/fiscoClient.go`, `baseline1/util/baseline1.go`, `baseline2/util/baseline2.go` | Addresses of the Truora `VRFCore` and `OracleCore` contracts and the hash of the VRF public key |
+| `baseline1/util/baseline1.go`, `baseline2/util/baseline2.go` | Addresses of the Truora `VRFCore` and `OracleCore` contracts and the hash of the VRF public key |
 | `webui/src/components/*.vue` | Back-end API address (`http://localhost:8080`) |
+| `bacme-exp/run_exp.sh`, `bacme-exp/seed_scale.sh` | Path of the benchmark program (`PERF_DIR`) and of the contract address file |
+| `bacme-start.sh`, `bacme-stop.sh` | Installation paths of FISCO BCOS, Truora, and the project |
+
+The benchmark scripts read the contract addresses and test accounts from environment variables (`DPKIACME_ADDR`, `DACME_ADDR`, `DCV_ADDR`, `ACCOUNT_PEM`, `SCALE_DOMAIN`); see the header of `bacme-exp/run_exp.sh` and the source files in `bacme-exp/perf-patch/src/`.
 
 ## Usage
 
@@ -66,73 +82,93 @@ In addition, the following addresses are hard-coded and must be adapted to your 
 2. Deploy Truora 1.1.1 on the chain, and record the addresses of the `VRFCore` and `OracleCore` contracts and the hash of the VRF public key.
 3. Start an IPFS node or cluster.
 
-### 2. Deploy the BACME Smart Contract
+### 2. Compile the Smart Contracts and Generate the Go Bindings
+
+Place `VRFClient.sol` and `FiscoOracleClient.sol` (provided by Truora) and `Table.sol` (provided by FISCO-BCOS) in `contract/`, compile the contracts with solc 0.6.10, and generate the Go bindings with the `abigen` tool of the FISCO-BCOS Go SDK, e.g.:
+
+```bash
+solc-0.6.10 --abi --bin -o build contract/DpkiAcme.sol
+abigen --bin build/DpkiAcme.bin --abi build/DpkiAcme.abi \
+       --pkg DpkiAcme --type DpkiAcme --out deployContract/DpkiAcme/DpkiAcme.go
+```
+
+Generate `baseline1/DACME/DACME.go` (package `DACME`) and `baseline2/DCV/DCV.go` (package `DCV`) in the same way, and initialize a Go module in each directory (`go mod init deployContract`, `go mod init baseline1`, `go mod init baseline2`, then `go mod tidy`).
+
+### 3. Deploy the BACME Smart Contract
 
 ```bash
 cd deployContract
 go run . -v <VRFCore address> -h <VRF public key hash> -o <OracleCore address>
 ```
 
-Write the printed contract address to `acmeClient/conf/contractAddress`.
+The program prints the address of the deployed contract.
 
-### 3. Run the ACME Client
-
-```bash
-cd acmeClient
-go run ./cmd/main.go      # starts the back-end API server on port 8080
-```
-
-The client serves the HTTP validation token through a built-in file server on port 80 (`./validation/acme/id-validation`) or through a local Nginx web root (`/var/www/html/acme/id-validation`).
-
-`acmeClient/cmd/main2.go` runs the complete certificate lifecycle without the web UI: contract deployment, domain control validation, certificate application, renewal, the three revocation methods, and certificate verification.
-
-### 4. Run the Web UI
-
-```bash
-cd webui
-npm install
-npm run dev
-```
-
-### 5. Run the Baselines
+### 4. Run the Baselines
 
 Each baseline has a deployment function (`DeployDACMEContract` in `baseline1/util/baseline1.go` and `DeployDCVContract` in `baseline2/util/baseline2.go`) and functions for each certificate management operation. Select the operation to be measured in `cmd/main.go` and run:
 
 ```bash
 cd baseline1            # or baseline2
+mkdir -p output         # timing and memory results are appended to files in output/
 go run ./cmd/main.go
 ```
 
+During domain control validation, the client serves the validation token at `/well-known/pki-validation` through a built-in HTTP server on port 80 (`util/httpServer.go`), which requires the corresponding privileges.
+
+### 5. Web UI
+
+`webui/src/` contains the source code of the web UI pages: domain control validation, certificate application, certificate management (renewal), emergency operations (revocation), certificate verification, and the update log. The pages call the API of the ACME client back end, which is not included in this repository.
+
 ### 6. Throughput Evaluation
 
+The throughput and latency of BACME and the two baselines were measured with a load generator based on the FISCO-BCOS Java SDK under identical request rates. `bacme-exp/` contains the toolkit used for the experiments:
+
+| File | Purpose |
+|---|---|
+| `netem.sh` | Adds delay to inter-node P2P traffic with `tc netem` (one-way delay D → RTT ≈ 2D) |
+| `exp_nodes.sh` | Shows node status and helps adjust the number of consensus nodes |
+| `run_exp.sh` | Iterates over RTT levels × operations × repetitions and appends the results to a CSV file |
+| `seed_scale.sh` | Pre-populates certificate records on chain for the large certificate state experiment |
+| `summarize.py` | Aggregates mean ± standard deviation by (nodes, RTT, operation) |
+| `collect_env.sh` | Collects hardware, OS, and FISCO consensus parameters into `env.txt` |
+| `make_report.py` | Generates the Markdown report `EXPERIMENT_RESULTS.md` |
+| `perf-patch/` | Source code (`src/`) and diffs of the patched benchmark classes: `PerformanceDpkiAcme`, `PerformanceCollector` (adds p50 / p95 / p99 latency), `PerformanceDomainValidation` (on-chain stages of domain control validation for BACME and the two baselines), and `PerformanceScale` (large certificate state experiment) |
+| `plots/` | Plotting scripts for the figures in the paper |
+
+To reproduce the experiments, build the FISCO-BCOS Java SDK demo (2.9.0) with the classes in `bacme-exp/perf-patch/src/`, copy the SDK certificates of the chain to `dist/conf/` of the benchmark program, and run, for each number of consensus nodes (10 → 7 → 4):
+
 ```bash
-cd performanceTest/java-sdk-demo
-./gradlew build
-cd dist
-bash dpkiacme.sh        # BACME
-bash dacme.sh           # Baseline 1
-bash dcv.sh             # Baseline 2
+bash bacme-exp/run_exp.sh --nodes 10
+bash bacme-exp/run_exp.sh --nodes 7 --rtts "0 20 50 100 200" --ops "apply update verify revoke" \
+                          --count 10000 --qps 10000 --repeat 3
 ```
 
-Each script invokes the load generator as follows:
+Supported operations:
+
+| Experiment | Operations |
+|---|---|
+| Certificate management (BACME) | `apply`, `update`, `revoke`, `verify` |
+| Domain control validation | `bacme_v1`, `bacme_v2`, `dacme_v1`, `dacme_v2`, `dcv_v1`, `dcv_v2` (`_v1`: VRF randomness request; `_v2`: start of HTTP validation) |
+| Large certificate state | `scale_apply`, `scale_update`, `scale_revoke`, `scale_verify` |
+
+Then collect the environment and generate the report:
 
 ```bash
-java -cp 'conf/:lib/*:apps/*' org.fisco.bcos.sdk.demo.perf.<Class> <operation> <count> <tps> <groupId>
+bash bacme-exp/collect_env.sh
+python3 bacme-exp/make_report.py
 ```
 
-The arguments are the operation, the total number of transactions, the target rate (transactions per second), and the group ID. In our evaluation, each script runs every operation five times with 10,000 transactions at a target rate of 10,000 transactions per second, e.g.:
+See `bacme-exp/README.md` for the detailed experiment steps and the changes to the benchmark program, and `bacme-exp/SCALE_NOTES.md` for the setup of the large certificate state experiment.
 
-```bash
-java -cp 'conf/:lib/*:apps/*' org.fisco.bcos.sdk.demo.perf.PerformanceDCV apply 10000 10000 1
-```
+### 7. Experimental Data
 
-| Scheme | Class | Operations |
-|---|---|---|
-| BACME | `PerformanceDpkiAcme` | `validation`, `apply`, `update`, `revoke`, `revokeP`, `revokeDV`, `verify` |
-| Baseline 1 | `PerformanceDACME` | `apply`, `update`, `verify` |
-| Baseline 2 | `PerformanceDCV` | `apply`, `update`, `revoke`, `verify` |
-
-If the build reports a Google Java Format error, run `./gradlew googleJavaFormat` first.
+| Path | Content |
+|---|---|
+| `bacme-exp-results/v2/EXPERIMENT_RESULTS.md` | Methodology, environment, and throughput / latency results for N = 10, 7, and 4 consensus nodes under different inter-node RTTs |
+| `bacme-exp-results/v2/env.txt` | Experimental environment |
+| `bacme-exp-results/scale/throughput_*.csv`, `latency_*.csv` | Results of the large certificate state experiment at three levels of on-chain certificate records (`s0`, `s1m`, `s2m`) |
+| `bacme-exp-results/scale/logs*/` | Raw benchmark logs |
+| `bacme-exp-results/scale/figs/` | Figure of the large certificate state experiment |
 
 ## Deployment and Compatibility
 
