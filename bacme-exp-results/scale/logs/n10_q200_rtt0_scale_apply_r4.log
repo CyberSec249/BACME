@@ -1,0 +1,41 @@
+====== PerformanceScale, op: scale_apply, count: 2000, qps: 200, account: 0xdc40799968a44889d79b780712e7ea2d3bee8233, domain: www.t0004.com, seeded certificates: 2000000, contract: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc
+====== PerformanceScale start (2000 tx) ======
+Already sent: 200/2000 transactions
+                                                       |received:10%
+Already sent: 400/2000 transactions
+Already sent: 600/2000 transactions
+Already sent: 800/2000 transactions
+Already sent: 1000/2000 transactions
+                                                       |received:20%
+                                                       |received:30%
+                                                       |received:40%
+                                                       |received:50%
+Already sent: 1200/2000 transactions
+                                                       |received:60%
+Already sent: 1400/2000 transactions
+                                                       |received:70%
+Already sent: 1600/2000 transactions
+                                                       |received:80%
+Already sent: 1800/2000 transactions
+                                                       |received:90%
+Already sent: 2000/2000 transactions
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 10232ms
+TPS(include error requests): 195.46520719311962
+TPS(exclude error requests): 195.46520719311962
+Avg time cost: 1133ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 0  : 0.0%
+50   < time <  100ms  : 1  : 0.05%
+100  < time <  200ms  : 67  : 3.35%
+200  < time <  400ms  : 398  : 19.900000000000002%
+400  < time <  1000ms : 898  : 44.9%
+1000 < time <  2000ms : 223  : 11.15%
+2000 < time           : 413  : 20.65%
+Latency of successful requests (ms):
+  p50 = 647, p95 = 3550, p99 = 3956, max = 4076
+RESULT_CSV,2000,2000,0,10232,195.47,195.47,1133.10,647,3550,3956,4076,0.0000

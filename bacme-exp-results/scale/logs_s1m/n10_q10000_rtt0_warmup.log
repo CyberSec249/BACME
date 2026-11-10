@@ -1,0 +1,43 @@
+====== PerformanceDpkiAcme, count: 2000, qps:10000, groupId: 1
+====== Deploy DpkiAcme ====== 
+====== Deploy DpkiAcme success, address: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc ====== 
+====== PerformanceDpkiAcme start ======
+Already sent: 200/2000 transactions
+Already sent: 400/2000 transactions
+Already sent: 600/2000 transactions
+Already sent: 800/2000 transactions
+Already sent: 1000/2000 transactions
+Already sent: 1200/2000 transactions
+Already sent: 1400/2000 transactions
+Already sent: 1600/2000 transactions
+Already sent: 1800/2000 transactions
+Already sent: 2000/2000 transactions
+                                                       |received:10%
+                                                       |received:20%
+                                                       |received:30%
+                                                       |received:40%
+                                                       |received:50%
+                                                       |received:60%
+                                                       |received:70%
+                                                       |received:80%
+                                                       |received:90%
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 2108ms
+TPS(include error requests): 948.7666034155598
+TPS(exclude error requests): 948.7666034155598
+Avg time cost: 1156ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 0  : 0.0%
+50   < time <  100ms  : 0  : 0.0%
+100  < time <  200ms  : 0  : 0.0%
+200  < time <  400ms  : 0  : 0.0%
+400  < time <  1000ms : 1227  : 61.35%
+1000 < time <  2000ms : 773  : 38.65%
+2000 < time           : 0  : 0.0%
+Latency of successful requests (ms):
+  p50 = 908, p95 = 1832, p99 = 1881, max = 1892
+RESULT_CSV,2000,2000,0,2108,948.77,948.77,1156.10,908,1832,1881,1892,0.0000

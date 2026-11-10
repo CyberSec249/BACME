@@ -1,0 +1,127 @@
+--- a/PerformanceCollector.java
++++ b/PerformanceCollector.java
+@@ -13,6 +13,10 @@
+  */
+ package org.fisco.bcos.sdk.demo.perf.collector;
+ 
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++import java.util.concurrent.ConcurrentLinkedQueue;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.concurrent.atomic.AtomicLong;
+ import org.fisco.bcos.sdk.model.JsonRpcResponse;
+@@ -35,6 +39,11 @@
+     private AtomicInteger received = new AtomicInteger(0);
+     private AtomicInteger error = new AtomicInteger(0);
+     private Long startTimestamp = System.currentTimeMillis();
++    // [Added] record the latency (ms) of every successful request, used to compute p50/p95/p99
++    private ConcurrentLinkedQueue<Long> successCosts = new ConcurrentLinkedQueue<>();
++    // [Added] number of requests accounted for. The `received` counter the main thread waits on counts the last request only after the results are printed,
++    // so that the main thread does not call System.exit before the results are printed
++    private AtomicInteger counted = new AtomicInteger(0);
+ 
+     public Integer getTotal() {
+         return total;
+@@ -85,13 +94,8 @@
+     public void stat(boolean errorMessage, Long cost) {
+         if (errorMessage) {
+             error.addAndGet(1);
+-        }
+-
+-        if ((received.get() + 1) % (total / 10) == 0) {
+-            System.out.println(
+-                    "                                                       |received:"
+-                            + String.valueOf((received.get() + 1) * 100 / total)
+-                            + "%");
++        } else {
++            successCosts.add(cost); // [Added]
+         }
+ 
+         if (cost < 50) {
+@@ -112,7 +116,21 @@
+ 
+         totalCost.addAndGet(cost);
+ 
+-        if (received.incrementAndGet() >= total) {
++        // [Modified] count only after all statistics are updated, so that all other requests are included when the last one prints
++        int current = counted.incrementAndGet(); // [Modified] originally received.get() + 1
++        if (total >= 10 && current % (total / 10) == 0) {
++            System.out.println(
++                    "                                                       |received:"
++                            + String.valueOf(current * 100 / total)
++                            + "%");
++        }
++
++        if (current < total) {
++            received.incrementAndGet();
++            return;
++        }
++        // [Modified] last request: print the results first, then count it in received (see finally below)
++        try {
+             System.out.println("total");
+ 
+             Long totalTime = System.currentTimeMillis() - startTimestamp;
+@@ -132,7 +150,7 @@
+             System.out.println("Avg time cost: " + String.valueOf(totalCost.get() / total) + "ms");
+             System.out.println(
+                     "Error rate: "
+-                            + String.valueOf((error.get() / (double) received.get()) * 100)
++                            + String.valueOf((error.get() / (double) total) * 100)
+                             + "%");
+ 
+             System.out.println("Time area:");
+@@ -178,7 +196,53 @@
+                             + "  : "
+                             + String.valueOf((double) timeout2000.get() / total * 100)
+                             + "%");
++            printPercentiles(totalTime); // [Added]
++        } finally {
++            received.incrementAndGet();
++        }
++    }
++
++    // [Added] compute and print latency percentiles of successful requests, plus a CSV line for scripts to parse
++    private void printPercentiles(Long totalTime) {
++        List<Long> costs = new ArrayList<>(successCosts);
++        Collections.sort(costs);
++        long p50 = percentile(costs, 50);
++        long p95 = percentile(costs, 95);
++        long p99 = percentile(costs, 99);
++        long max = costs.isEmpty() ? -1 : costs.get(costs.size() - 1);
++        double seconds = (double) totalTime / 1000;
++        double tpsAll = total / seconds;
++        double tpsOk = (total - error.get()) / seconds;
++        double avg = (double) totalCost.get() / total;
++        double errRate = (double) error.get() / total * 100;
++        System.out.println("Latency of successful requests (ms):");
++        System.out.println("  p50 = " + p50 + ", p95 = " + p95 + ", p99 = " + p99 + ", max = " + max);
++        // Fields: total,ok,err,time_ms,tps_all(incl. failures),tps_ok(successful only),avg_ms,p50,p95,p99,max,err_rate%
++        System.out.println(
++                String.format(
++                        "RESULT_CSV,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f",
++                        total,
++                        total - error.get(),
++                        error.get(),
++                        totalTime,
++                        tpsAll,
++                        tpsOk,
++                        avg,
++                        p50,
++                        p95,
++                        p99,
++                        max,
++                        errRate));
++        System.out.flush();
++    }
++
++    // Nearest-rank percentile; returns -1 if there are no successful samples
++    private static long percentile(List<Long> sorted, int pct) {
++        if (sorted.isEmpty()) {
++            return -1;
+         }
++        int rank = (int) Math.ceil(pct / 100.0 * sorted.size());
++        return sorted.get(Math.max(rank, 1) - 1);
+     }
+ 
+     public void setStartTimestamp(Long startTimestamp) {

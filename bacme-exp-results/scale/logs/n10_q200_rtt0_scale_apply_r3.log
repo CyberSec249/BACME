@@ -1,0 +1,41 @@
+====== PerformanceScale, op: scale_apply, count: 2000, qps: 200, account: 0xdc40799968a44889d79b780712e7ea2d3bee8233, domain: www.t0004.com, seeded certificates: 2000000, contract: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc
+====== PerformanceScale start (2000 tx) ======
+Already sent: 200/2000 transactions
+                                                       |received:10%
+Already sent: 400/2000 transactions
+                                                       |received:20%
+Already sent: 600/2000 transactions
+                                                       |received:30%
+Already sent: 800/2000 transactions
+                                                       |received:40%
+Already sent: 1000/2000 transactions
+                                                       |received:50%
+Already sent: 1200/2000 transactions
+                                                       |received:60%
+Already sent: 1400/2000 transactions
+                                                       |received:70%
+Already sent: 1600/2000 transactions
+                                                       |received:80%
+Already sent: 1800/2000 transactions
+                                                       |received:90%
+Already sent: 2000/2000 transactions
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 10516ms
+TPS(include error requests): 190.1863826550019
+TPS(exclude error requests): 190.1863826550019
+Avg time cost: 469ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 2  : 0.1%
+50   < time <  100ms  : 1  : 0.05%
+100  < time <  200ms  : 122  : 6.1%
+200  < time <  400ms  : 658  : 32.9%
+400  < time <  1000ms : 1217  : 60.85%
+1000 < time <  2000ms : 0  : 0.0%
+2000 < time           : 0  : 0.0%
+Latency of successful requests (ms):
+  p50 = 468, p95 = 760, p99 = 827, max = 893
+RESULT_CSV,2000,2000,0,10516,190.19,190.19,469.37,468,760,827,893,0.0000

@@ -1,0 +1,52 @@
+====== PerformanceScale, op: scale_update, count: 2000, qps: 200, account: 0xdc40799968a44889d79b780712e7ea2d3bee8233, domain: www.t0004.com, seeded certificates: 1000000, contract: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc
+  progress: 200/2000 (ok=200, err=0)
+  progress: 400/2000 (ok=400, err=0)
+  progress: 600/2000 (ok=600, err=0)
+  progress: 800/2000 (ok=803, err=0)
+  progress: 1000/2000 (ok=1002, err=0)
+  progress: 1200/2000 (ok=1201, err=0)
+  progress: 1400/2000 (ok=1400, err=0)
+  progress: 1600/2000 (ok=1601, err=0)
+  progress: 1800/2000 (ok=1800, err=0)
+  progress: 2000/2000 (ok=2000, err=0)
+====== Setup finished: ok=2000 err=0
+====== PerformanceScale start (2000 tx) ======
+Already sent: 200/2000 transactions
+                                                       |received:10%
+Already sent: 400/2000 transactions
+                                                       |received:20%
+Already sent: 600/2000 transactions
+                                                       |received:30%
+Already sent: 800/2000 transactions
+                                                       |received:40%
+Already sent: 1000/2000 transactions
+                                                       |received:50%
+Already sent: 1200/2000 transactions
+                                                       |received:60%
+Already sent: 1400/2000 transactions
+                                                       |received:70%
+Already sent: 1600/2000 transactions
+                                                       |received:80%
+Already sent: 1800/2000 transactions
+                                                       |received:90%
+Already sent: 2000/2000 transactions
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 10393ms
+TPS(include error requests): 192.437217357837
+TPS(exclude error requests): 192.437217357837
+Avg time cost: 502ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 0  : 0.0%
+50   < time <  100ms  : 0  : 0.0%
+100  < time <  200ms  : 83  : 4.15%
+200  < time <  400ms  : 598  : 29.9%
+400  < time <  1000ms : 1304  : 65.2%
+1000 < time <  2000ms : 15  : 0.75%
+2000 < time           : 0  : 0.0%
+Latency of successful requests (ms):
+  p50 = 492, p95 = 813, p99 = 984, max = 1081
+RESULT_CSV,2000,2000,0,10393,192.44,192.44,502.76,492,813,984,1081,0.0000

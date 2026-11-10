@@ -1,0 +1,41 @@
+====== PerformanceScale, op: scale_verify, count: 2000, qps: 200, account: 0xdc40799968a44889d79b780712e7ea2d3bee8233, domain: www.t0004.com, seeded certificates: 1000000, contract: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc
+====== PerformanceScale start (verify, 2000 queries over 1000000 seeded certificates) ======
+                                                       |received:10%
+Already queried: 200/2000
+                                                       |received:20%
+Already queried: 400/2000
+                                                       |received:30%
+Already queried: 600/2000
+                                                       |received:40%
+Already queried: 800/2000
+                                                       |received:50%
+Already queried: 1000/2000
+                                                       |received:60%
+Already queried: 1200/2000
+                                                       |received:70%
+Already queried: 1400/2000
+                                                       |received:80%
+Already queried: 1600/2000
+                                                       |received:90%
+Already queried: 1800/2000
+Already queried: 2000/2000
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 10025ms
+TPS(include error requests): 199.501246882793
+TPS(exclude error requests): 199.501246882793
+Avg time cost: 4ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 2000  : 100.0%
+50   < time <  100ms  : 0  : 0.0%
+100  < time <  200ms  : 0  : 0.0%
+200  < time <  400ms  : 0  : 0.0%
+400  < time <  1000ms : 0  : 0.0%
+1000 < time <  2000ms : 0  : 0.0%
+2000 < time           : 0  : 0.0%
+Latency of successful requests (ms):
+  p50 = 2, p95 = 16, p99 = 26, max = 43
+RESULT_CSV,2000,2000,0,10025,199.50,199.50,4.39,2,16,26,43,0.0000

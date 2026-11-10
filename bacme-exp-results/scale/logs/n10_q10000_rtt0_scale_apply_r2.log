@@ -1,0 +1,41 @@
+====== PerformanceScale, op: scale_apply, count: 30000, qps: 10000, account: 0xdc40799968a44889d79b780712e7ea2d3bee8233, domain: www.t0004.com, seeded certificates: 2000000, contract: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc
+====== PerformanceScale start (30000 tx) ======
+Already sent: 3000/30000 transactions
+Already sent: 6000/30000 transactions
+Already sent: 9000/30000 transactions
+Already sent: 12000/30000 transactions
+Already sent: 15000/30000 transactions
+Already sent: 18000/30000 transactions
+Already sent: 21000/30000 transactions
+Already sent: 24000/30000 transactions
+Already sent: 27000/30000 transactions
+Already sent: 30000/30000 transactions
+                                                       |received:10%
+                                                       |received:20%
+                                                       |received:30%
+                                                       |received:40%
+                                                       |received:50%
+                                                       |received:60%
+                                                       |received:70%
+                                                       |received:80%
+                                                       |received:90%
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  30000
+Total time: 26559ms
+TPS(include error requests): 1129.5606009262397
+TPS(exclude error requests): 1129.5606009262397
+Avg time cost: 14644ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 0  : 0.0%
+50   < time <  100ms  : 0  : 0.0%
+100  < time <  200ms  : 0  : 0.0%
+200  < time <  400ms  : 0  : 0.0%
+400  < time <  1000ms : 120  : 0.4%
+1000 < time <  2000ms : 0  : 0.0%
+2000 < time           : 29880  : 99.6%
+Latency of successful requests (ms):
+  p50 = 14143, p95 = 22521, p99 = 23614, max = 23689
+RESULT_CSV,30000,30000,0,26559,1129.56,1129.56,14644.16,14143,22521,23614,23689,0.0000

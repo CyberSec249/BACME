@@ -1,0 +1,43 @@
+====== PerformanceDpkiAcme, count: 2000, qps:200, groupId: 1
+====== Deploy DpkiAcme ====== 
+====== Deploy DpkiAcme success, address: 0xc527a075d4AC8e4038EcA86dba5E9CaD15AD61Dc ====== 
+====== PerformanceDpkiAcme start ======
+Already sent: 200/2000 transactions
+                                                       |received:10%
+Already sent: 400/2000 transactions
+                                                       |received:20%
+Already sent: 600/2000 transactions
+                                                       |received:30%
+Already sent: 800/2000 transactions
+                                                       |received:40%
+Already sent: 1000/2000 transactions
+                                                       |received:50%
+Already sent: 1200/2000 transactions
+Already sent: 1400/2000 transactions
+Already sent: 1600/2000 transactions
+Already sent: 1800/2000 transactions
+                                                       |received:60%
+                                                       |received:70%
+                                                       |received:80%
+                                                       |received:90%
+Already sent: 2000/2000 transactions
+                                                       |received:100%
+total
+===================================================================
+Total transactions:  2000
+Total time: 10348ms
+TPS(include error requests): 193.2740626207963
+TPS(exclude error requests): 193.2740626207963
+Avg time cost: 1051ms
+Error rate: 0.0%
+Time area:
+0    < time <  50ms   : 0  : 0.0%
+50   < time <  100ms  : 2  : 0.1%
+100  < time <  200ms  : 143  : 7.1499999999999995%
+200  < time <  400ms  : 416  : 20.8%
+400  < time <  1000ms : 850  : 42.5%
+1000 < time <  2000ms : 201  : 10.05%
+2000 < time           : 388  : 19.400000000000002%
+Latency of successful requests (ms):
+  p50 = 580, p95 = 3430, p99 = 3831, max = 3935
+RESULT_CSV,2000,2000,0,10348,193.27,193.27,1051.46,580,3430,3831,3935,0.0000

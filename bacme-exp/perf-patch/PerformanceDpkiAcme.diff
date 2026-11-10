@@ -1,0 +1,23 @@
+--- a/PerformanceDpkiAcme.java
++++ b/PerformanceDpkiAcme.java
+@@ -73,13 +73,14 @@
+ 
+             // Deploy the DpkiAcme contract
+             System.out.println("====== Deploy DpkiAcme ====== ");
+-            DpkiAcme dpkiAcme =
+-                    DpkiAcme.load(
+-                            "0x55fe377410e00423a097e17c2e10b71bc4276aa0", client, cryptoKeyPair);
++            // [Modified] the contract address can be set via the environment variable DPKIACME_ADDR; the original default is used otherwise
++            String contractAddress =
++                    System.getenv()
++                            .getOrDefault(
++                                    "DPKIACME_ADDR", "0x55fe377410e00423a097e17c2e10b71bc4276aa0");
++            DpkiAcme dpkiAcme = DpkiAcme.load(contractAddress, client, cryptoKeyPair);
+             System.out.println(
+-                    "====== Deploy DpkiAcme success, address: "
+-                            + "0x55fe377410e00423a097e17c2e10b71bc4276aa0"
+-                            + " ====== ");
++                    "====== Deploy DpkiAcme success, address: " + contractAddress + " ====== ");
+             // Initialize the performance collector
+             PerformanceCollector collector = new PerformanceCollector();
+             collector.setTotal(count); // set the total number of transactions
