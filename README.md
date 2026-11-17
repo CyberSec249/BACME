@@ -232,7 +232,7 @@ Consequently, the performance differences among the three schemes stem from thei
 | `UpdateCertificate(domain, publicKey)` | Allows the registering account to replace the public key of a verified domain. |
 | `VerifyCertificate(domain)` | Returns the public key bound to a domain. |
 
-Baseline 1 does not provide a revocation mechanism, so revocation is not evaluated for Baseline 1.
+Baseline 1 implements revocation through an authorized update of the registered public key, rather than a separate certificate-status invalidation operation.
 
 ### 3. Baseline 2
 
